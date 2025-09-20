@@ -134,22 +134,29 @@
       z-index: 9999;
     }
 
-    /* Responsividade */
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 1.6rem;
-      }
-      .menu {
-        max-width: 90%;
-      }
-      .socials {
-        flex-direction: column;
-        align-items: center;
-      }
-      .socials button {
-        width: 100%;
-        max-width: 200px;
-      }
+    /* Banner de atualização */
+    #updateBanner {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #323232;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      display: none;
+      z-index: 9999;
+    }
+    #updateBanner button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #ffd54f;
+      color: #000;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -188,6 +195,7 @@
 </div>
 
 <div id="msg"></div>
+<div id="updateBanner">🔄 Nova versão disponível! <button onclick="location.reload()">Atualizar</button></div>
 
 <script>
 function logout() {
@@ -225,6 +233,13 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
       .then(reg => console.log('✅ Service Worker registrado:', reg.scope))
       .catch(err => console.log('❌ Service Worker falhou:', err));
+  });
+
+  // 📢 ouve mensagens do SW
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data.type === 'NEW_VERSION') {
+      document.getElementById('updateBanner').style.display = 'block';
+    }
   });
 }
 
