@@ -34,7 +34,12 @@ self.addEventListener('fetch', (event) => {
     if (cached) {
       // Atualiza em segundo plano
       fetch(req).then((fresh) => {
-        if (fresh && fresh.ok) {
+        if (
+          fresh &&
+          fresh.ok &&
+          fresh.status === 200 &&
+          !req.url.startsWith('chrome-extension://')
+        ) {
           cache.put(req, fresh.clone());
         }
       }).catch(() => { /* ignora erros de rede */ });
@@ -44,7 +49,12 @@ self.addEventListener('fetch', (event) => {
 
     try {
       const fresh = await fetch(req);
-      if (fresh && fresh.ok) {
+      if (
+        fresh &&
+        fresh.ok &&
+        fresh.status === 200 &&
+        !req.url.startsWith('chrome-extension://')
+      ) {
         cache.put(req, fresh.clone());
       }
       return fresh;
