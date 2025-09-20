@@ -1,5 +1,5 @@
-/* Service Worker - Pré-cache em lotes + limpeza automática + aviso de update + modo offline forçado */
-const CACHE_NAME = 'app-v8';  // 🔄 troque a versão sempre que atualizar
+/* Service Worker - Pré-cache em lotes + limpeza automática + aviso de update */
+const CACHE_NAME = 'app-v7';  // 🔄 troque a versão sempre que atualizar
 const OFFLINE_URL = '/offline.html';
 
 // Essenciais + primeiros 10 SVGs
@@ -13,9 +13,6 @@ const PRECACHE = [
 // Configuração de lotes
 const TOTAL_PAGES = 80;   // total de SVGs atuais
 const BATCH_SIZE = 10;    // quantos por vez
-
-// 🔒 flag de modo offline forçado
-let offlineForcado = false;
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -72,16 +69,8 @@ self.addEventListener('fetch', (event) => {
     const cache = await caches.open(CACHE_NAME);
     const cached = await cache.match(req);
 
-    // 🌐 Se o usuário ativou "Modo Offline forçado"
-    if (offlineForcado) {
-      if (cached) return cached;
-      const offline = await caches.match(OFFLINE_URL);
-      return offline || new Response('Offline (forçado)', { status: 503 });
-    }
-
-    // 🌐 comportamento normal (Cache First + Update)
     if (cached) {
-      return cached; // entrega instantâneo do cache
+      return cached; // entrega instantânea do cache
     }
 
     try {
@@ -101,13 +90,5 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data) {
-    if (event.data.type === 'SKIP_WAITING') {
-      self.skipWaiting();
-    }
-    if (event.data.type === 'SET_OFFLINE') {
-      offlineForcado = event.data.value;
-      console.log(`🌐 Modo Offline forçado = ${offlineForcado}`);
-    }
-  }
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
