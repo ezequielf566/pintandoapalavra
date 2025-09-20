@@ -1,5 +1,5 @@
-/* Service Worker - versão universal para Vercel */
-const CACHE_NAME = 'app-v2';  // versão atualizada
+/* Service Worker - versão universal para Vercel (Cache First + Update) */
+const CACHE_NAME = 'app-v3';  // nova versão para forçar atualização
 const OFFLINE_URL = '/offline.html';
 
 const PRECACHE = [
@@ -28,18 +28,25 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
 
   event.respondWith((async () => {
-    const cached = await caches.match(req);
-    if (cached) return cached;
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(req);
+
+    if (cached) {
+      // Atualiza em segundo plano
+      fetch(req).then((fresh) => {
+        if (fresh && fresh.ok) {
+          cache.put(req, fresh.clone());
+        }
+      }).catch(() => { /* ignora erros de rede */ });
+
+      return cached; // entrega instantâneo do cache
+    }
 
     try {
       const fresh = await fetch(req);
-
-      // Só salva no cache se a resposta for completa (200 OK)
-      if (fresh && fresh.ok && fresh.status === 200) {
-        const cache = await caches.open(CACHE_NAME);
+      if (fresh && fresh.ok) {
         cache.put(req, fresh.clone());
       }
-
       return fresh;
     } catch (e) {
       if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
