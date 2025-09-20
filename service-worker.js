@@ -2,11 +2,12 @@
 const CACHE_NAME = 'app-v4';  // incrementado para forçar atualização
 const OFFLINE_URL = '/offline.html';
 
+// Lista fixa com os 80 SVGs + arquivos principais
 const PRECACHE = [
   '/index.html',
   OFFLINE_URL,
-  '/manifest.json'
-  // 👉 aqui você pode incluir seus 1.svg, 2.svg, ... 80.svg
+  '/manifest.json',
+  ...Array.from({ length: 80 }, (_, i) => `/assets/pages/${i + 1}.svg`)
 ];
 
 self.addEventListener('install', (event) => {
