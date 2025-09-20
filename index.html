@@ -37,6 +37,7 @@
       font-weight: bold;
       transition: background 0.2s;
       color: #000;
+      margin-left: 0.5rem;
     }
 
     header .btn:hover {
@@ -176,8 +177,7 @@
 <div id='menuContainer'>
   <header>
     <!-- canto esquerdo -->
-    <div style="display:flex; gap:0.5rem;">
-      <button id="offlineBtn" class="btn">🌐 Modo Offline</button>
+    <div>
       <button onclick="abrirInfo()" class="btn">ℹ️ Informações</button>
     </div>
     <!-- canto direito -->
@@ -264,21 +264,6 @@ function abrirInfo() {
 function fecharInfo() {
   document.getElementById("infoModal").style.display = "none";
 }
-
-// 🌐 Botão para ativar/desativar modo offline forçado
-let offlineForcado = false;
-const offlineBtn = document.getElementById("offlineBtn");
-
-offlineBtn.addEventListener("click", () => {
-  offlineForcado = !offlineForcado;
-  navigator.serviceWorker.controller?.postMessage({
-    type: "SET_OFFLINE",
-    value: offlineForcado
-  });
-
-  offlineBtn.innerText = offlineForcado ? "✅ Offline Ativo" : "🌐 Modo Offline";
-  showMsg(offlineForcado ? "🌐 Agora o app está em Modo Offline" : "🔄 Voltou ao modo normal (online+cache)");
-});
 </script>
 
 <iframe id="conteudo" style="display:none;width:100%;height:100vh;border:none;"></iframe>
