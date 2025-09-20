@@ -1,14 +1,18 @@
-/* Service Worker - Cache First Instantâneo + Update em segundo plano */
-const CACHE_NAME = 'app-v4';  // incrementado para forçar atualização
+/* Service Worker - Pré-cache em lotes (10 em 10) */
+const CACHE_NAME = 'app-v5';  // incrementado para forçar atualização
 const OFFLINE_URL = '/offline.html';
 
-// Lista fixa com os 80 SVGs + arquivos principais
+// Essenciais + primeiros 10 SVGs
 const PRECACHE = [
   '/index.html',
   OFFLINE_URL,
   '/manifest.json',
-  ...Array.from({ length: 80 }, (_, i) => `/assets/pages/${i + 1}.svg`)
+  ...Array.from({ length: 10 }, (_, i) => `/app/assets/pages/${i + 1}.svg`)
 ];
+
+// Configuração de lotes
+const TOTAL_PAGES = 80;   // total de SVGs atuais
+const BATCH_SIZE = 10;    // quantos por vez
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -22,8 +26,28 @@ self.addEventListener('activate', (event) => {
     const keys = await caches.keys();
     await Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)));
     self.clients.claim();
+
+    // 🔥 dispara o cache dos lotes em background
+    precacheInBatches();
   })());
 });
+
+async function precacheInBatches() {
+  const cache = await caches.open(CACHE_NAME);
+
+  for (let start = 10; start < TOTAL_PAGES; start += BATCH_SIZE) {
+    const batch = Array.from(
+      { length: Math.min(BATCH_SIZE, TOTAL_PAGES - start) },
+      (_, i) => `/app/assets/pages/${start + i + 1}.svg`
+    );
+    try {
+      await cache.addAll(batch);
+      console.log(`✅ Lote ${start + 1}–${start + batch.length} salvo`);
+    } catch (err) {
+      console.warn(`⚠️ Falha ao salvar lote ${start + 1}`, err);
+    }
+  }
+}
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
@@ -34,31 +58,13 @@ self.addEventListener('fetch', (event) => {
     const cached = await cache.match(req);
 
     if (cached) {
-      // ✅ entrega do cache instantânea
-      event.waitUntil(
-        fetch(req).then((fresh) => {
-          if (
-            fresh &&
-            fresh.ok &&
-            fresh.status === 200 &&
-            !req.url.startsWith('chrome-extension://')
-          ) {
-            cache.put(req, fresh.clone());
-          }
-        }).catch(() => { /* ignora erro de rede */ })
-      );
+      // Entrega instantânea do cache
       return cached;
     }
 
-    // Se não tem cache → tenta rede
     try {
       const fresh = await fetch(req);
-      if (
-        fresh &&
-        fresh.ok &&
-        fresh.status === 200 &&
-        !req.url.startsWith('chrome-extension://')
-      ) {
+      if (fresh && fresh.ok && fresh.status === 200 && !req.url.startsWith('chrome-extension://')) {
         cache.put(req, fresh.clone());
       }
       return fresh;
