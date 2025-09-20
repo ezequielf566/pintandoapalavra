@@ -13,18 +13,18 @@
     body {
       margin: 0;
       font-family: "Fredoka", sans-serif;
-      background: #fff9e6; /* amarelo suave */
-      color: #000; /* preto puro */
+      background: #fff9e6;
+      color: #000;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
 
     header {
-      background: #ffd54f; /* amarelo mais forte */
+      background: #ffd54f;
       padding: 1rem;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
     }
 
@@ -134,35 +134,53 @@
       z-index: 9999;
     }
 
-    /* Banner de atualização */
-    #updateBanner {
+    /* Modal estilizado */
+    #infoModal {
       position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #323232;
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 0.95rem;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
       display: none;
-      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
     }
-    #updateBanner button {
-      margin-left: 10px;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    #infoBox {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80%;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    #infoBox h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    #infoBox button {
+      margin-top: 15px;
       background: #ffd54f;
-      color: #000;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
       font-weight: bold;
+    }
+    #infoBox button:hover {
+      background: #ffca28;
     }
   </style>
 </head>
 <body>
 <div id='menuContainer'>
   <header>
+    <!-- canto esquerdo -->
+    <div>
+      <button onclick="abrirInfo()" class="btn">ℹ️ Informações</button>
+    </div>
+    <!-- canto direito -->
     <div style="display:flex; gap:0.5rem; margin-left:auto;">
       <button id="installBtn" class="btn" style="display:none;">📲 Instalar app</button>
       <button onclick="logout()" class="btn">Sair da Conta</button>
@@ -195,7 +213,22 @@
 </div>
 
 <div id="msg"></div>
-<div id="updateBanner">🔄 Nova versão disponível! <button onclick="location.reload()">Atualizar</button></div>
+
+<!-- Modal Informativo -->
+<div id="infoModal">
+  <div id="infoBox">
+    <h3>📖 Pintando a Palavra</h3>
+    <p><b>⚡ Destaque:</b> Funciona muito melhor <b>offline</b>!</p>
+    <p>Primeira vez: é necessário internet para baixar as histórias.<br>
+    Depois disso: funciona 100% offline e carrega muito mais rápido.</p>
+    <p><b>✅ Offline:</b> páginas em segundos, tudo já no seu dispositivo.<br>
+       <b>❌ Online:</b> pode ser mais lento, pois o servidor verifica e recarrega as artes.</p>
+    <p><b>Extras:</b> PDFs completos e atividades via Google Drive.</p>
+    <p><b>Recursos:</b> Zoom, botões intuitivos e imagens otimizadas.</p>
+    <p>🙏 Obrigado por usar o Pintando a Palavra!</p>
+    <button onclick="fecharInfo()">Fechar</button>
+  </div>
+</div>
 
 <script>
 function logout() {
@@ -216,30 +249,32 @@ window.onpopstate = function(event) {
   }
 };
 
-// Função para mostrar alerta discreto
+// Mostrar alerta discreto
 function showMsg(texto) {
   const msg = document.getElementById("msg");
   msg.innerText = texto;
   msg.style.display = "block";
   setTimeout(() => { msg.style.display = "none"; }, 3000);
 }
+
+// Abrir/fechar modal
+function abrirInfo() {
+  document.getElementById("infoModal").style.display = "flex";
+}
+function fecharInfo() {
+  document.getElementById("infoModal").style.display = "none";
+}
 </script>
+
 <iframe id="conteudo" style="display:none;width:100%;height:100vh;border:none;"></iframe>
 
-<!-- Registro do Service Worker e botão de instalação -->
+<!-- SW + Instalação -->
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
       .then(reg => console.log('✅ Service Worker registrado:', reg.scope))
       .catch(err => console.log('❌ Service Worker falhou:', err));
-  });
-
-  // 📢 ouve mensagens do SW
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    if (event.data.type === 'NEW_VERSION') {
-      document.getElementById('updateBanner').style.display = 'block';
-    }
   });
 }
 
