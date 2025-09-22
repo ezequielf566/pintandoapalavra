@@ -1,8 +1,8 @@
-/* Service Worker - Cache First */
+/* Service Worker - Cache First (definitivo) */
 const CACHE_NAME = 'app-v5'; // nova versão para forçar update
 const OFFLINE_URL = '/offline.html';
 
-// Ajustado para 102 páginas
+// 🔒 Lista de páginas do app (102 SVGs)
 const PAGES = Array.from({ length: 102 }, (_, i) => `/app/assets/pages/${i + 1}.svg`);
 
 const PRECACHE = [
@@ -12,7 +12,7 @@ const PRECACHE = [
   ...PAGES
 ];
 
-// Instala e pré-carrega
+// Instalação: salva em cache os arquivos principais
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -20,7 +20,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Ativa e limpa caches antigos
+// Ativação: limpa versões antigas
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
@@ -29,7 +29,7 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
-// Estratégia Cache First
+// Fetch: estratégia Cache First
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
@@ -41,14 +41,16 @@ self.addEventListener('fetch', (event) => {
       try {
         const fresh = await fetch(event.request);
 
-        if (fresh && fresh.ok) {
-          const clone = fresh.clone(); // 🔑 clona antes
+        // ✅ Só salva no cache se for resposta completa (200 OK)
+        if (fresh && fresh.ok && fresh.status === 200) {
+          const clone = fresh.clone();
           const cache = await caches.open(CACHE_NAME);
           cache.put(event.request, clone);
         }
 
         return fresh;
       } catch (err) {
+        // 🚨 Offline e sem cache → mostra offline.html
         if (event.request.mode === 'navigate') {
           return await caches.match(OFFLINE_URL);
         }
@@ -57,9 +59,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Força update imediato
+// Atualização imediata do SW
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
