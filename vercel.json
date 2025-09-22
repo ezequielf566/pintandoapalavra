@@ -1,18 +1,13 @@
 {
   "version": 2,
-  "headers": [
-    {
-      "source": "/app/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        },
-        {
-          "key": "Accept-Ranges",
-          "value": "none"
-        }
-      ]
-    }
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "manifest.json", "use": "@vercel/static" },
+    { "src": "service-worker.js", "use": "@vercel/static" },
+    { "src": "app/**", "use": "@vercel/static" },
+    { "src": "icons/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
