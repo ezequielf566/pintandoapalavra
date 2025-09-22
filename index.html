@@ -26,6 +26,7 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
+      gap: 0.5rem;
     }
 
     header .btn {
@@ -37,11 +38,24 @@
       font-weight: bold;
       transition: background 0.2s;
       color: #000;
-      margin-left: 0.5rem;
     }
 
     header .btn:hover {
       background: #f1f1f1;
+    }
+
+    /* Ícone de informações */
+    #infoBtn {
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
     }
 
     main {
@@ -119,32 +133,50 @@
       transform: scale(1.03);
     }
 
-    #msg {
+    /* Banner informativo */
+    #infoBanner {
       position: fixed;
-      bottom: 20px;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      background: #323232;
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 0.95rem;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border: 3px solid #ffd54f;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      z-index: 10000;
       display: none;
-      z-index: 9999;
+      text-align: left;
+      font-size: 0.95rem;
     }
 
-    @media (max-width: 600px) {
-      h1 { font-size: 1.6rem; }
-      .menu { max-width: 90%; }
-      .socials { flex-direction: column; align-items: center; }
-      .socials button { width: 100%; max-width: 200px; }
+    #infoBanner h3 {
+      margin-top: 0;
+      color: #000;
+    }
+
+    #infoBanner button {
+      margin-top: 15px;
+      padding: 8px 14px;
+      background: #ffd54f;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #infoBanner button:hover {
+      background: #ffca28;
     }
   </style>
 </head>
 <body>
 <div id='menuContainer'>
   <header>
-    <div style="display:flex; gap:0.5rem; margin-left:auto;">
+    <button id="infoBtn" title="Informações">ℹ️</button>
+    <div style="margin-left:auto; display:flex; gap:0.5rem;">
       <button id="installBtn" class="btn" style="display:none;">📲 Instalar app</button>
       <button onclick="logout()" class="btn">Sair da Conta</button>
     </div>
@@ -173,6 +205,18 @@
       </button>
     </div>
   </main>
+</div>
+
+<!-- Banner popup -->
+<div id="infoBanner">
+  <h3>ℹ️ Dicas importantes</h3>
+  <p><b>Destaque:</b> Funciona muito melhor off-line!</p>
+  <p><b>Primeira vez:</b> é necessário abrir com internet para que o app baixe e salve todos os arquivos.</p>
+  <p><b>Depois disso:</b> funciona 100% offline.</p>
+  <p>✅ <b>Off-line é mais rápido:</b> as páginas carregam em segundos, porque todo o conteúdo já está no seu dispositivo.</p>
+  <p>❌ <b>Online pode ser mais lento:</b> o servidor precisa verificar atualizações.</p>
+  <p><b>📲 Como instalar:</b> Clique em “📲 Instalar App” no menu e pronto! O app ficará disponível na sua tela inicial.</p>
+  <button onclick="fecharInfo()">Fechar</button>
 </div>
 
 <div id="msg"></div>
@@ -223,6 +267,14 @@ window.addEventListener('beforeinstallprompt', (e) => {
     installBtn.remove();
   });
 });
+
+// 📌 Controle do banner
+document.getElementById("infoBtn").addEventListener("click", () => {
+  document.getElementById("infoBanner").style.display = "block";
+});
+function fecharInfo() {
+  document.getElementById("infoBanner").style.display = "none";
+}
 </script>
 
 <!-- 🔐 Trava de acesso com Firebase -->
@@ -246,8 +298,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
     const email = localStorage.getItem("savedEmail");
     const isLogged = localStorage.getItem("isLogged");
 
-    console.log("🔍 Validando acesso:", { email, isLogged });
-
     if (!email || isLogged !== "true") {
       window.location.replace("login.html");
       return;
@@ -257,7 +307,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
       const ref = doc(db, "usuarios", email.toLowerCase());
       const snap = await getDoc(ref);
       if (!snap.exists()) {
-        console.warn("⚠️ Documento não encontrado no Firestore");
         localStorage.removeItem("savedEmail");
         localStorage.removeItem("isLogged");
         window.location.replace("login.html");
