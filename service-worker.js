@@ -1,28 +1,30 @@
-/* Service Worker - Cache First (v6 corrigido) */
-const CACHE_NAME = 'app-v6'; // nova versão para forçar update
+/* Service Worker - Cache First */
+const CACHE_NAME = 'app-v6'; // incrementa a versão quando mudar algo
 const OFFLINE_URL = '/offline.html';
 
-// garante exatamente 102 páginas
+// Lista das páginas (1 a 102)
 const PAGES = Array.from({ length: 102 }, (_, i) => `/app/assets/pages/${i + 1}.svg`);
 
 const PRECACHE = [
   '/index.html',
   OFFLINE_URL,
   '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
   ...PAGES
 ];
 
-// Instala e salva no cache
+// Instala e faz cache inicial
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
-      cache.addAll(PRECACHE)
+      Promise.allSettled(PRECACHE.map((url) => cache.add(url)))
     )
   );
 });
 
-// Ativa e limpa versões antigas
+// Ativa e limpa caches antigos
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
@@ -31,39 +33,38 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
-// Estratégia Cache First
+// Estratégia de busca
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) {
-        // ✅ Usa direto do cache
-        return cached;
-      }
+  event.respondWith((async () => {
+    // 1️⃣ tenta no cache
+    const cached = await caches.match(req);
+    if (cached) return cached;
 
-      // 🔄 Se não tiver → busca online e salva
-      return fetch(req).then((fresh) => {
-        // só cacheia respostas completas (200)
-        if (fresh && fresh.ok && fresh.status === 200) {
-          const clone = fresh.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
-        }
-        return fresh;
-      }).catch(() => {
-        // 🚨 Se offline e não tiver cache → mostra offline.html
-        if (req.mode === 'navigate') {
-          return caches.match(OFFLINE_URL);
-        }
-      });
-    })
-  );
+    try {
+      // 2️⃣ busca online
+      const fresh = await fetch(req);
+
+      // só guarda no cache se for resposta completa (não 206)
+      if (fresh && fresh.ok && fresh.status === 200) {
+        const clone = fresh.clone();
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(req, clone);
+      }
+      return fresh;
+    } catch {
+      // 3️⃣ se offline → mostra fallback
+      if (req.mode === 'navigate') {
+        const offline = await caches.match(OFFLINE_URL);
+        return offline || new Response('Offline', { status: 503 });
+      }
+    }
+  })());
 });
 
-// Permite forçar update via postMessage
+// Força update imediato
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
