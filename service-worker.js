@@ -1,8 +1,8 @@
-/* Service Worker - Cache First */
-const CACHE_NAME = 'app-v5'; // versão nova para forçar update
+/* Service Worker - Cache First (v6 corrigido) */
+const CACHE_NAME = 'app-v6'; // nova versão para forçar update
 const OFFLINE_URL = '/offline.html';
 
-// Lista de páginas para pré-cache (1 a 102)
+// garante exatamente 102 páginas
 const PAGES = Array.from({ length: 102 }, (_, i) => `/app/assets/pages/${i + 1}.svg`);
 
 const PRECACHE = [
@@ -12,15 +12,17 @@ const PRECACHE = [
   ...PAGES
 ];
 
-// Instala e salva no cache inicial
+// Instala e salva no cache
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE))
+    caches.open(CACHE_NAME).then((cache) =>
+      cache.addAll(PRECACHE)
+    )
   );
 });
 
-// Ativa e remove caches antigos
+// Ativa e limpa versões antigas
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
@@ -29,39 +31,39 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
-// Busca arquivos (cache first)
+// Estratégia Cache First
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
-  event.respondWith((async () => {
-    // 1️⃣ Tenta servir do cache
-    const cached = await caches.match(req);
-    if (cached) return cached;
-
-    try {
-      // 2️⃣ Busca online
-      const fresh = await fetch(req);
-
-      // 🚨 Só salva no cache se for resposta COMPLETA (200 OK)
-      if (fresh && fresh.ok && fresh.status === 200) {
-        const clone = fresh.clone();
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(req, clone);
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      if (cached) {
+        // ✅ Usa direto do cache
+        return cached;
       }
 
-      return fresh;
-    } catch (err) {
-      // 3️⃣ Se offline e não tiver no cache → mostra offline.html
-      if (req.mode === 'navigate') {
-        return caches.match(OFFLINE_URL);
-      }
-      return new Response('Offline', { status: 503, statusText: 'Offline' });
-    }
-  })());
+      // 🔄 Se não tiver → busca online e salva
+      return fetch(req).then((fresh) => {
+        // só cacheia respostas completas (200)
+        if (fresh && fresh.ok && fresh.status === 200) {
+          const clone = fresh.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
+        }
+        return fresh;
+      }).catch(() => {
+        // 🚨 Se offline e não tiver cache → mostra offline.html
+        if (req.mode === 'navigate') {
+          return caches.match(OFFLINE_URL);
+        }
+      });
+    })
+  );
 });
 
-// Força atualização imediata
+// Permite forçar update via postMessage
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
