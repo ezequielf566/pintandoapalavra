@@ -1,8 +1,8 @@
-/* Service Worker - Cache First */
-const CACHE_NAME = 'app-v7'; // nova versão
+/* Service Worker - Cache First v7 */
+const CACHE_NAME = 'app-v7';
 const OFFLINE_URL = '/offline.html';
 
-// Pré-carregar páginas conhecidas (index, manifest e 102 artes)
+// lista de 102 páginas SVG
 const PAGES = Array.from({ length: 102 }, (_, i) => `/app/assets/pages/${i + 1}.svg`);
 
 const PRECACHE = [
@@ -12,24 +12,24 @@ const PRECACHE = [
   ...PAGES
 ];
 
+// Instala e salva no cache inicial
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log("📦 Pré-cache inicial...");
-      return cache.addAll(PRECACHE).catch(err => {
-        console.warn("⚠️ Erro ao adicionar no precache:", err);
-      });
+      console.log('📦 Pré-cache inicial...');
+      return cache.addAll(PRECACHE);
     })
   );
 });
 
+// Remove caches antigos
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(keys.map(k => {
       if (k !== CACHE_NAME) {
-        console.log("🗑️ Limpando cache antigo:", k);
+        console.log('🗑️ Removendo cache antigo:', k);
         return caches.delete(k);
       }
     }));
@@ -37,6 +37,7 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
+// Estratégia Cache First
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
@@ -44,28 +45,26 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) {
-        console.log("✅ Cache hit:", req.url);
-        return cached;
+        return cached; // ✅ já no cache
       }
 
       return fetch(req).then((fresh) => {
+        // só salva se a resposta for válida e completa
         if (fresh && fresh.ok && fresh.status === 200) {
-          const clone = fresh.clone();
           caches.open(CACHE_NAME).then(cache => {
-            // 🔎 Verificação extra para capturar assets
-            let url = new URL(req.url);
+            cache.put(req, fresh.clone());
 
-            if (url.pathname.includes('/assets/pages/')) {
-              console.log("💾 Salvando arte no cache:", url.pathname);
-            } else {
-              console.log("💾 Salvando no cache:", url.pathname);
-            }
-
-            cache.put(req, clone);
+            // avisa o front que foi salvo
+            self.clients.matchAll().then(clients => {
+              clients.forEach(client =>
+                client.postMessage({ type: 'CACHED', url: req.url })
+              );
+            });
           });
         }
         return fresh;
       }).catch(() => {
+        // se offline e navegando → mostra offline.html
         if (req.mode === 'navigate') {
           return caches.match(OFFLINE_URL);
         }
