@@ -35,310 +35,114 @@
       padding: 0.5rem 1rem;
       border-radius: 8px;
       cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s;
-      color: #000;
-    }
-
-    header .btn:hover {
-      background: #f1f1f1;
-    }
-
-    /* Ícone de informações */
-    #infoBtn {
-      font-size: 1.5rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.2); opacity: 0.7; }
+      font-weight: 600;
     }
 
     main {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 2rem;
-      color: #000;
-    }
-
-    h2 {
-      margin-top: 2rem;
-      font-size: 1.3rem;
-      color: #000;
-    }
-
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      width: 100%;
-      max-width: 320px;
-    }
-
-    .menu button {
-      background: #ffe082;
-      border: none;
-      padding: 1rem;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      font-weight: bold;
-      transition: transform 0.2s, background 0.2s;
-      width: 100%;
-      color: #000;
-    }
-
-    .menu button:hover {
-      background: #ffd54f;
-      transform: scale(1.02);
-    }
-
-    .socials {
-      display: flex;
       justify-content: center;
-      gap: 1rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
+      gap: 1.5rem;
+      text-align: center;
     }
 
-    .socials button {
-      background: #fff59d;
-      border: none;
-      padding: 0.8rem 1.2rem;
-      border-radius: 12px;
-      font-size: 1rem;
-      cursor: pointer;
-      font-weight: bold;
-      transition: transform 0.2s, background 0.2s;
-      min-width: 120px;
-      color: #000;
-    }
-
-    .socials button:hover {
-      background: #ffe082;
-      transform: scale(1.03);
-    }
-
-    /* Banner informativo */
-    #infoBanner {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #fff;
-      border: 3px solid #ffd54f;
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      z-index: 10000;
-      display: none;
-      text-align: left;
-      font-size: 0.95rem;
-    }
-
-    #infoBanner h3 {
-      margin-top: 0;
-      color: #000;
-    }
-
-    #infoBanner button {
-      margin-top: 15px;
-      padding: 8px 14px;
+    main button {
       background: #ffd54f;
       border: none;
-      border-radius: 8px;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-size: 1.2rem;
       font-weight: bold;
       cursor: pointer;
-    }
-
-    #infoBanner button:hover {
-      background: #ffca28;
     }
   </style>
 </head>
 <body>
-<div id='menuContainer'>
   <header>
-    <button id="infoBtn" title="Informações">ℹ</button>
-    <div style="margin-left:auto; display:flex; gap:0.5rem;">
-      <button id="installBtn" class="btn" style="display:none;">📲 Instalar app</button>
-      <button onclick="logout()" class="btn">Sair da Conta</button>
-    </div>
+    <button class="btn" onclick="logout()">Sair</button>
   </header>
 
   <main>
-    <h1>Seja bem-vindo ao<br>Pintando a Palavra</h1>
-
-    <div class="menu">
-      <button onclick="abrirApp()">Histórias</button>
-      <button onclick="window.open('https://drive.google.com/drive/folders/16yViJ5Ft9wIsLNxzTzNsygpvoBTYxnrT?usp=drive_link', '_blank')">
-        Atividades
-      </button>
-      <button onclick="window.open('https://drive.google.com/drive/folders/1MFnUpkdOk7yVpup7IRr1oHnJWdahEWUB?usp=drive_link', '_blank')">
-        PDF Completo
-      </button>
-    </div>
-
-    <h2>Siga-nos nas redes sociais</h2>
-    <div class="socials">
-      <button onclick="window.open('https://www.instagram.com/pintandoapalavra_?igsh=MTBzdjdnc2k3OG4yaQ==', '_blank')">
-        Instagram
-      </button>
-      <button onclick="window.open('https://www.facebook.com/share/1CYaATKtFQ/', '_blank')">
-        Facebook
-      </button>
-    </div>
+    <h1>Bem-vindo ao Pintando a Palavra</h1>
+    <button onclick="window.location.href='app/index.html'">Histórias</button>
   </main>
-</div>
 
-<!-- Banner popup -->
-<div id="infoBanner">
-  <h3>ℹ Dicas importantes</h3>
-  <p><b>Destaque:</b> Funciona muito melhor off-line!</p>
-  <p><b>Primeira vez:</b> é necessário abrir com internet para que o app baixe e salve todos os arquivos.</p>
-  <p><b>Depois disso:</b> funciona 100% offline.</p>
-  <p>✅ <b>Off-line é mais rápido:</b> as páginas carregam em segundos, porque todo o conteúdo já está no seu dispositivo.</p>
-  <p>❌ <b>Online pode ser mais lento:</b> o servidor precisa verificar atualizações.</p>
-  <p><b>📲 Como instalar:</b> Clique em “📲 Instalar App” no menu e pronto! O app ficará disponível na sua tela inicial.</p>
-  <button onclick="fecharInfo()">Fechar</button>
-</div>
+  <!-- Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/service-worker.js", { scope: "/" })
+          .then(() => console.log("SW registrado"))
+          .catch(err => console.error("Erro SW:", err));
+      });
+    }
+  </script>
 
-<div id="msg"></div>
-<iframe id="conteudo" style="display:none;width:100%;height:100vh;border:none;"></iframe>
+  <!-- 🔑 Lógica de verificação de acesso -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
 
-<script>
-function abrirApp() {
-  document.getElementById("menuContainer").style.display = "none";
-  const iframe = document.getElementById("conteudo");
-  iframe.style.display = "block";
-  iframe.src = "app/index.html"; 
-  history.pushState({tela: "app"}, "", "#app");
-}
-window.onpopstate = function(event) {
-  if (!event.state || event.state.tela !== "app") {
-    document.getElementById("conteudo").style.display = "none";
-    document.getElementById("menuContainer").style.display = "block";
-  }
-};
-function showMsg(texto) {
-  const msg = document.getElementById("msg");
-  msg.innerText = texto;
-  msg.style.display = "block";
-  setTimeout(() => { msg.style.display = "none"; }, 3000);
-}
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_AUTH_DOMAIN",
+      projectId: "SEU_PROJECT_ID",
+      storageBucket: "SEU_BUCKET",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
 
-// 👉 Service Worker com log extra
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => {
-        console.log('✅ Service Worker registrado:', reg.scope);
-        if (reg.active) {
-          console.log('🔄 SW ativo, pronto para cachear recursos');
-        }
-      })
-      .catch(err => console.log('❌ Service Worker falhou:', err));
-  });
-}
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-// Recebe mensagens do SW quando salvar algo
-navigator.serviceWorker.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'CACHED') {
-    console.log('📦 Salvo no cache:', event.data.url);
-  }
-});
+    const email    = localStorage.getItem("savedEmail");
+    const isLogged = localStorage.getItem("isLogged") === "true";
+    const acesso   = localStorage.getItem("acesso"); // "aprovado"
 
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  const installBtn = document.getElementById("installBtn");
-  installBtn.style.display = "inline-block";
-  installBtn.addEventListener("click", async () => {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      showMsg("✅ App instalado com sucesso!");
+    // 1) Já aprovado antes? entra direto (inclusive offline)
+    if (acesso === "aprovado" && email) {
+      console.log("Acesso local aprovado — entrando offline.");
+    } else if (!email || !isLogged) {
+      // 2) Nunca logou/aprovou? vai pro login
+      window.location.replace("login.html");
     } else {
-      showMsg("❌ Instalação cancelada.");
-    }
-    deferredPrompt = null;
-    installBtn.remove();
-  });
-});
+      // 3) Validar no Firebase (quando online)
+      try {
+        const ref = doc(db, "usuarios", email.toLowerCase());
+        const snap = await getDoc(ref);
 
-// 📌 Controle do banner
-document.getElementById("infoBtn").addEventListener("click", () => {
-  document.getElementById("infoBanner").style.display = "block";
-});
-function fecharInfo() {
-  document.getElementById("infoBanner").style.display = "none";
-}
-</script>
-
-<!-- 🔐 Trava de acesso com Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDN2p43zoaWoFuRcxrBMmNE8_Cm0d0ecw8",
-    authDomain: "pintando-a-palavra-fnl.firebaseapp.com",
-    projectId: "pintando-a-palavra-fnl",
-    storageBucket: "pintando-a-palavra-fnl.firebasestorage.app",
-    messagingSenderId: "394858613454",
-    appId: "1:394858613454:web:68ecc607c0414bd7779e9f"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  async function validarAcesso() {
-    const email = localStorage.getItem("savedEmail");
-    const isLogged = localStorage.getItem("isLogged");
-
-    if (!email || isLogged !== "true") {
-      window.location.replace("login.html");
-      return;
-    }
-
-    try {
-      const ref = doc(db, "usuarios", email.toLowerCase());
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        localStorage.removeItem("savedEmail");
-        localStorage.removeItem("isLogged");
-        window.location.replace("login.html");
+        if (snap.exists()) {
+          localStorage.setItem("acesso", "aprovado"); // ✅ grava aprovação local
+          console.log("Acesso confirmado no Firebase.");
+        } else {
+          // não aprovado no banco → limpa e volta pro login
+          localStorage.removeItem("acesso");
+          localStorage.removeItem("savedEmail");
+          localStorage.removeItem("isLogged");
+          window.location.replace("login.html");
+        }
+      } catch (err) {
+        console.warn("Falha ao validar (provável offline):", err);
+        if (!navigator.onLine && isLogged) {
+          console.log("Offline, mas já logado → permitido.");
+        } else if (acesso === "aprovado") {
+          console.log("Acesso salvo → permitido mesmo sem validar agora.");
+        } else {
+          window.location.replace("login.html");
+        }
       }
-    } catch (err) {
-      console.error("❌ Erro ao validar:", err);
+    }
+
+    // Função de logout (limpa tudo)
+    window.logout = function() {
+      localStorage.removeItem("savedEmail");
+      localStorage.removeItem("isLogged");
+      localStorage.removeItem("acesso");
       window.location.replace("login.html");
     }
-  }
-
-  document.addEventListener("DOMContentLoaded", validarAcesso);
-
-  window.logout = function() {
-    localStorage.removeItem("savedEmail");
-    localStorage.removeItem("isLogged");
-    window.location.replace("login.html");
-  }
-</script>
+  </script>
 </body>
 </html>
