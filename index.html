@@ -175,7 +175,7 @@
 <body>
 <div id='menuContainer'>
   <header>
-    <button id="infoBtn" title="Informações">ℹ️</button>
+    <button id="infoBtn" title="Informações">ℹ</button>
     <div style="margin-left:auto; display:flex; gap:0.5rem;">
       <button id="installBtn" class="btn" style="display:none;">📲 Instalar app</button>
       <button onclick="logout()" class="btn">Sair da Conta</button>
@@ -209,7 +209,7 @@
 
 <!-- Banner popup -->
 <div id="infoBanner">
-  <h3>ℹ️ Dicas importantes</h3>
+  <h3>ℹ Dicas importantes</h3>
   <p><b>Destaque:</b> Funciona muito melhor off-line!</p>
   <p><b>Primeira vez:</b> é necessário abrir com internet para que o app baixe e salve todos os arquivos.</p>
   <p><b>Depois disso:</b> funciona 100% offline.</p>
@@ -242,13 +242,28 @@ function showMsg(texto) {
   msg.style.display = "block";
   setTimeout(() => { msg.style.display = "none"; }, 3000);
 }
+
+// 👉 Service Worker com log extra
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('✅ Service Worker registrado:', reg.scope))
+      .then(reg => {
+        console.log('✅ Service Worker registrado:', reg.scope);
+        if (reg.active) {
+          console.log('🔄 SW ativo, pronto para cachear recursos');
+        }
+      })
       .catch(err => console.log('❌ Service Worker falhou:', err));
   });
 }
+
+// Recebe mensagens do SW quando salvar algo
+navigator.serviceWorker.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CACHED') {
+    console.log('📦 Salvo no cache:', event.data.url);
+  }
+});
+
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
