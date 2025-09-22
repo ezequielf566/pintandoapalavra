@@ -1,7 +1,8 @@
-/* Service Worker - Cache First + suporte a caminhos relativos */
-const CACHE_NAME = 'app-v7';
+/* Service Worker - Cache First */
+const CACHE_NAME = 'app-v7'; // nova versão
 const OFFLINE_URL = '/offline.html';
 
+// Pré-carregar páginas conhecidas (index, manifest e 102 artes)
 const PAGES = Array.from({ length: 102 }, (_, i) => `/app/assets/pages/${i + 1}.svg`);
 
 const PRECACHE = [
@@ -14,14 +15,24 @@ const PRECACHE = [
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE))
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log("📦 Pré-cache inicial...");
+      return cache.addAll(PRECACHE).catch(err => {
+        console.warn("⚠️ Erro ao adicionar no precache:", err);
+      });
+    })
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)));
+    await Promise.all(keys.map(k => {
+      if (k !== CACHE_NAME) {
+        console.log("🗑️ Limpando cache antigo:", k);
+        return caches.delete(k);
+      }
+    }));
     self.clients.claim();
   })());
 });
@@ -33,14 +44,23 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) {
+        console.log("✅ Cache hit:", req.url);
         return cached;
       }
 
       return fetch(req).then((fresh) => {
         if (fresh && fresh.ok && fresh.status === 200) {
-          // 🔑 Corrigido: salva tanto requests absolutos quanto relativos
           const clone = fresh.clone();
           caches.open(CACHE_NAME).then(cache => {
+            // 🔎 Verificação extra para capturar assets
+            let url = new URL(req.url);
+
+            if (url.pathname.includes('/assets/pages/')) {
+              console.log("💾 Salvando arte no cache:", url.pathname);
+            } else {
+              console.log("💾 Salvando no cache:", url.pathname);
+            }
+
             cache.put(req, clone);
           });
         }
