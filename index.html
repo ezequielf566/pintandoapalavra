@@ -136,11 +136,11 @@
       }
     }
 
-    // Função de logout (limpa tudo)
+    // 🔴 Logout limpa tudo
     window.logout = function() {
       localStorage.removeItem("savedEmail");
       localStorage.removeItem("isLogged");
-      localStorage.removeItem("acesso");
+      localStorage.removeItem("acesso"); // limpa flag de aprovação também
       window.location.replace("login.html");
     }
   </script>
