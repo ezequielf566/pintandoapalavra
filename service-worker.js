@@ -1,8 +1,8 @@
 /* Service Worker - Cache First */
-const CACHE_NAME = 'app-v6'; // sempre aumente o número quando alterar o SW
+const CACHE_NAME = 'app-v5'; // nova versão para forçar update
 const OFFLINE_URL = '/offline.html';
 
-// Lista todas as páginas do app
+// Ajustado para 102 páginas
 const PAGES = Array.from({ length: 102 }, (_, i) => `/app/assets/pages/${i + 1}.svg`);
 
 const PRECACHE = [
@@ -12,7 +12,7 @@ const PRECACHE = [
   ...PAGES
 ];
 
-// Instalação → salva tudo no cache
+// Instala e pré-carrega
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -20,7 +20,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Ativação → remove caches antigos
+// Ativa e limpa caches antigos
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
@@ -29,29 +29,27 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
-// Intercepta todas as requisições
+// Estratégia Cache First
 self.addEventListener('fetch', (event) => {
-  const req = event.request;
-  if (req.method !== 'GET') return;
+  if (event.request.method !== 'GET') return;
 
   event.respondWith(
     (async () => {
-      // 1. Tenta pegar do cache
-      const cached = await caches.match(req);
+      const cached = await caches.match(event.request);
       if (cached) return cached;
 
-      // 2. Se não tiver no cache, busca online e salva
       try {
-        const fresh = await fetch(req);
+        const fresh = await fetch(event.request);
+
         if (fresh && fresh.ok) {
-          const clone = fresh.clone(); // ⚡ clona antes de salvar
+          const clone = fresh.clone(); // 🔑 clona antes
           const cache = await caches.open(CACHE_NAME);
-          cache.put(req, clone);
+          cache.put(event.request, clone);
         }
+
         return fresh;
-      } catch (e) {
-        // 3. Se offline e sem cache → mostra offline.html
-        if (req.mode === 'navigate') {
+      } catch (err) {
+        if (event.request.mode === 'navigate') {
           return await caches.match(OFFLINE_URL);
         }
       }
@@ -59,7 +57,9 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Permite atualizar o SW manualmente
+// Força update imediato
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
