@@ -1,5 +1,5 @@
 /* Service Worker - Cache First */
-const CACHE_NAME = 'app-v4'; // nova versão para forçar update
+const CACHE_NAME = 'app-v5'; // incrementa versão para forçar update
 const OFFLINE_URL = '/offline.html';
 
 const PAGES = Array.from({ length: 102 }, (_, i) => `/app/assets/pages/${i + 1}.svg`);
@@ -11,6 +11,7 @@ const PRECACHE = [
   ...PAGES
 ];
 
+// Instala e faz pré-cache
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -18,6 +19,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Ativa e remove caches antigos
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
@@ -26,6 +28,7 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
+// Estratégia de busca: Cache First
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
@@ -36,12 +39,13 @@ self.addEventListener('fetch', (event) => {
         // ✅ Já está no cache → usa direto
         return cached;
       }
-      // 🔄 Se não tiver → busca online e salva
+      // 🔄 Se não tiver → busca online e salva no cache
       return fetch(req).then((fresh) => {
         if (fresh && fresh.ok && fresh.status === 200) {
-          caches.open(CACHE_NAME).then(cache => cache.put(req, fresh.clone()));
+          const responseToCache = fresh.clone(); // ✅ clona antes de salvar
+          caches.open(CACHE_NAME).then(cache => cache.put(req, responseToCache));
         }
-        return fresh;
+        return fresh; // 🔥 usa o original para a resposta
       }).catch(() => {
         // 🚨 Se offline e não tiver cache → mostra offline.html
         if (req.mode === 'navigate') {
@@ -52,6 +56,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Forçar atualização imediata quando receber comando
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
