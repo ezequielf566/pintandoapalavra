@@ -50,11 +50,11 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1161028842613992'); 
+    fbq('init', '1116979890524870'); 
     fbq('track', 'PageView');
   </script>
   <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1161028842613992&ev=PageView&noscript=1"
+    src="https://www.facebook.com/tr?id=1116979890524870&ev=PageView&noscript=1"
   /></noscript>
   <!-- End Meta Pixel Code -->
 </head>
@@ -110,7 +110,6 @@
           localStorage.setItem("savedEmail", email);
           localStorage.setItem("isLogged", "true");
           localStorage.setItem("acesso", "aprovado");
-
           window.location.href = "index.html";
         } else {
           alert("Seu Gmail ainda não está autorizado.");
@@ -121,15 +120,19 @@
       }
     });
 
-    // Evento Pixel: InitiateCheckout
+    // Evento Pixel: InitiateCheckout com delay de 300ms para garantir disparo
     const checkoutBtn = document.getElementById("checkoutBtn");
     if(checkoutBtn){
-      checkoutBtn.addEventListener("click", function(){
+      checkoutBtn.addEventListener("click", function(e){
+        e.preventDefault();
         fbq('track', 'InitiateCheckout', {
           content_name: 'Checkout Pintando a Palavra',
           value: 19.90,
           currency: 'BRL'
         });
+        setTimeout(function(){
+          window.location.href = checkoutBtn.href;
+        }, 300);
       });
     }
   </script>
