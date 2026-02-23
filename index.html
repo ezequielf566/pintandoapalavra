@@ -1,148 +1,102 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pintando a Palavra — Menu</title>
-
-  <!-- Manifest PWA -->
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#ffffff">
-
-  <style>
-    body {
-      margin: 0;
-      font-family: "Fredoka", sans-serif;
-      background: #fff9e6;
-      color: #000;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    header {
-      background: #ffd54f;
-      padding: 1rem;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    header .btn {
-      background: #fff;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1.5rem;
-      text-align: center;
-    }
-
-    main button {
-      background: #ffd54f;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 12px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pintando a Palavra - App Cristão Infantil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Nunito', sans-serif; }
+    </style>
 </head>
-<body>
-  <header>
-    <button class="btn" onclick="logout()">Sair</button>
-  </header>
+<body class="bg-slate-50 text-gray-800">
 
-  <main>
-    <h1>Bem-vindo ao Pintando a Palavra</h1>
-    <button onclick="window.location.href='app/index.html'">Histórias</button>
-  </main>
+    <header class="bg-blue-100 py-20 px-6 text-center shadow-sm">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-blue-900 mb-6">Pintando a Palavra</h1>
+            <p class="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
+                Um aplicativo cristão infantil desenvolvido para auxiliar crianças no conhecimento da Palavra de Deus de forma leve, didática e envolvente.
+            </p>
+            <a href="https://play.google.com/store/apps/details?id=com.pintandoapalavra.app" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg text-lg">
+                Baixar no Google Play
+            </a>
+        </div>
+    </header>
 
-  <!-- Service Worker -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("/service-worker.js", { scope: "/" })
-          .then(() => console.log("SW registrado"))
-          .catch(err => console.error("Erro SW:", err));
-      });
-    }
-  </script>
+    <section class="py-16 px-6 bg-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Uma Experiência Formativa e Significativa</h2>
+            <p class="text-gray-600 text-lg leading-relaxed">
+                Voltado para famílias, educadores e ministérios infantis, o aplicativo integra tecnologia e ensino bíblico. Atualmente, o aplicativo está estruturado em três pilares principais: minijogos educativos, ferramenta de pintura digital e materiais em PDF para impressão.
+            </p>
+        </div>
+    </section>
 
-  <!-- 🔑 Lógica de verificação de acesso -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    <section class="py-16 px-6 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Os Três Pilares do Aplicativo</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition duration-300 border-t-4 border-yellow-400">
+                    <div class="text-4xl mb-4 text-center">🎮</div>
+                    <h3 class="text-xl font-bold text-center text-blue-900 mb-4">Minijogos Interativos</h3>
+                    <p class="text-gray-600">
+                        Desenvolvidos para estimular o raciocínio, a memória e a coordenação, sempre com base em personagens e acontecimentos bíblicos. A proposta é unir aprendizado e interatividade, reforçando conteúdos bíblicos de maneira dinâmica e acessível.
+                    </p>
+                </div>
 
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_AUTH_DOMAIN",
-      projectId: "SEU_PROJECT_ID",
-      storageBucket: "SEU_BUCKET",
-      messagingSenderId: "SEU_SENDER_ID",
-      appId: "SEU_APP_ID"
-    };
+                <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition duration-300 border-t-4 border-green-400">
+                    <div class="text-4xl mb-4 text-center">🎨</div>
+                    <h3 class="text-xl font-bold text-center text-blue-900 mb-4">Pintura Digital</h3>
+                    <p class="text-gray-600">
+                        Permite que as crianças interajam com ilustrações bíblicas diretamente na tela. Estimula a criatividade, desenvolve a coordenação motora e favorece a expressão artística dentro de um ambiente alinhado aos valores cristãos.
+                    </p>
+                </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+                <div class="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition duration-300 border-t-4 border-red-400">
+                    <div class="text-4xl mb-4 text-center">🖨️</div>
+                    <h3 class="text-xl font-bold text-center text-blue-900 mb-4">Materiais para Impressão</h3>
+                    <p class="text-gray-600">
+                        Uma biblioteca de materiais em PDF prontos para download. São desenhos e conteúdos de apoio para serem utilizados em casa, na Escola Bíblica Dominical (EBD) ou escolas, incentivando atividades fora da tela.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    const email    = localStorage.getItem("savedEmail");
-    const isLogged = localStorage.getItem("isLogged") === "true";
-    const acesso   = localStorage.getItem("acesso"); // "aprovado"
+    <section class="py-16 px-6 bg-white">
+        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            
+            <div>
+                <div class="text-4xl mb-4">📖</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Histórias Bíblicas Ilustradas</h3>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    Além das atividades interativas, o aplicativo apresenta narrativas baseadas fielmente nas Escrituras, adaptadas com linguagem clara e adequada ao público infantil. O objetivo é facilitar a compreensão de princípios como amor, obediência, fé e respeito.
+                </p>
+            </div>
 
-    // 1) Já aprovado antes? entra direto (inclusive offline)
-    if (acesso === "aprovado" && email) {
-      console.log("Acesso local aprovado — entrando offline.");
-    } else if (!email || !isLogged) {
-      // 2) Nunca logou/aprovou? vai pro login
-      window.location.replace("login.html");
-    } else {
-      // 3) Validar no Firebase (quando online)
-      try {
-        const ref = doc(db, "usuarios", email.toLowerCase());
-        const snap = await getDoc(ref);
+            <div class="bg-blue-50 p-8 rounded-2xl border border-blue-100">
+                <div class="text-4xl mb-4">🛡️</div>
+                <h3 class="text-2xl font-bold text-blue-900 mb-4">Ambiente Seguro e com Propósito</h3>
+                <p class="text-gray-700 leading-relaxed">
+                    Pintando a Palavra foi desenvolvido como um ambiente seguro, livre de conteúdos inadequados. Trata-se de uma ferramenta de apoio para pais, responsáveis e educadores que desejam conduzir a formação espiritual das crianças de maneira intencional e estruturada.
+                </p>
+            </div>
 
-        if (snap.exists()) {
-          localStorage.setItem("acesso", "aprovado"); // ✅ grava aprovação local
-          console.log("Acesso confirmado no Firebase.");
-        } else {
-          // não aprovado no banco → limpa e volta pro login
-          localStorage.removeItem("acesso");
-          localStorage.removeItem("savedEmail");
-          localStorage.removeItem("isLogged");
-          window.location.replace("login.html");
-        }
-      } catch (err) {
-        console.warn("Falha ao validar (provável offline):", err);
-        if (!navigator.onLine && isLogged) {
-          console.log("Offline, mas já logado → permitido.");
-        } else if (acesso === "aprovado") {
-          console.log("Acesso salvo → permitido mesmo sem validar agora.");
-        } else {
-          window.location.replace("login.html");
-        }
-      }
-    }
+        </div>
+    </section>
 
-    // 🔴 Logout limpa tudo
-    window.logout = function() {
-      localStorage.removeItem("savedEmail");
-      localStorage.removeItem("isLogged");
-      localStorage.removeItem("acesso"); // limpa flag de aprovação também
-      window.location.replace("login.html");
-    }
-  </script>
+    <footer class="bg-gray-900 text-gray-300 py-8 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <h4 class="text-xl font-bold text-white mb-2">Pintando a Palavra</h4>
+            <p class="mb-4">Semeando a palavra de Deus no coração das crianças.</p>
+            <p class="text-sm">Contato: contato@pintandoapalavra.app</p>
+            <div class="mt-8 border-t border-gray-700 pt-6 text-sm">
+                &copy; 2026 Pintando a Palavra. Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>
